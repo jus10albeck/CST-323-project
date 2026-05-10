@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+    layout:decorate="layouts/defaultTemplate">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task List</title>
+    <style>
+        body {
+            background-color: #808080;
+        }
+
+        .section {
+            width: 82%;
+        }
+
+        .section-title {
+            color: gold;
+            font-size: 20px;
+            display: inline-block;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .add-btn {
+            float: right;
+            cursor: pointer;
+        }
+
+        .task-box {
+            width: 100%;
+            border: 1px solid black;
+            padding: 10px;
+            
+            height:40vh;
+
+            overflow-y: auto;
+            background-color: #858585;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.35);
+        }
+
+        .task-item {
+            display: block;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .task-text {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            cursor: pointer;
+            padding: 5px 10px;
+            color: #87cefa;
+            margin-left: 10px;
+            font-size: 18px;
+        }
+
+        .task-details {
+            border-left: 3px solid gold;
+            margin-top: 5px;
+        }
+
+        .collapse {
+            background-color: #9a9a9a;
+        }
+
+        .checkbox {
+            transform: scale(1.5);
+            margin-right: 10px;
+        }
+
+        .completed {
+            text-decoration: line-through;
+            color: gold;
+        }
+
+        .task-time {
+            margin-left: auto;
+            color: gold
+        }
+
+        .search-result:hover {
+            background-color: #6e6e6e;
+        }
+
+        .highlight {
+            background-color: yellow;
+            color: black;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <section layout:fragment="content">
+
+        <!-- Top Bar -->
+        <div th:insert="layouts/common :: topBar"></div>
+
+        <!-- Today Section -->
+        <div class="section">
+            <div class="section-header">
+                <span class="section-title">Today</span>
+                <span class="add-btn glyphicon glyphicon-plus" 
+                    data-toggle="modal" data-target="#addTaskModal" 
+                    style="color: gold; font-size: 16px;">
+                </span>
+            </div>
+
+            <div class="task-box">
+                <div id="taskAccordion">
+
+                        <div th:each="task, iter : ${todayTasks}"
+                            class="task-item"
+                            th:data-name="${task.name}"
+                            th:data-date="${#temporals.format(task.dateTime, 'dd MMM HH:mm')}"
+                            th:data-address="${task.address}"
+                            th:data-notes="${task.notes}">
+
+                            <!-- Header -->
+                            <div class="task-text">
+
+                                <input type="checkbox" class="checkbox"
+                                    th:checked="${task != null and task.completed}"
+                                    onclick="this.nextElementSibling.classList.toggle('completed')" style="margin-right: 10px;">
+
+                                <span class="task-name"
+                                data-toggle="collapse"
+                                th:data-target="'#task-' + ${iter.index}"
+                                style="cursor:pointer;"
+                                th:text="${task.name}"></span>
+
+                                <span style="color:gold; margin-left:auto; cursor:pointer;"
+                                    data-toggle="collapse"
+                                    th:data-target="'#task-' + ${iter.index}"
+                                    th:text="${#temporals.format(task.dateTime, 'dd MMM HH:mm')}">
+                                </span>
+                            </div>
+
+                            <!-- Collapsible content -->
+                            <div th:id="'task-' + ${iter.index}"
+                                class="collapse"
+                                data-parent="#taskAccordion">
+
+                                <div style="padding:10px; color:white;">
+                                    <p><strong>Date:</strong>
+                                        <span th:text="${#temporals.format(task.dateTime, 'dd MMM HH:mm')}"></span>
+                                    </p>
+                                    <p><strong>Address:</strong>
+                                        <span th:text="${task.address}"></span>
+                                    </p>
+                                    <p><strong>Notes:</strong>
+                                        <span th:text="${task.notes}"></span>
+                                    </p>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                </div>
+
+            </div>
+        </div><br>
+        
+        <!-- Future Section -->
+        <div class="section">
+
+            <div class="section-header">
+                <span class="section-title">Future Tasks</span>
+                <span class="add-btn glyphicon glyphicon-plus"
+                    data-toggle="modal" data-target="#addTaskModal" 
+                    style="color: gold; font-size: 16px;"></span>
+            </div>
+
+            <div class="task-box">       
+                <div id="taskAccordion">
+                        <div th:each="task, iter : ${futureTasks}"
+                            class="task-item"
+                            th:data-name="${task.name}"
+                            th:data-date="${#temporals.format(task.dateTime, 'dd MMM HH:mm')}"
+                            th:data-address="${task.address}"
+                            th:data-notes="${task.notes}">
+
+                            <!-- Header -->
+                            <div class="task-text">
+
+                                <input type="checkbox" class="checkbox"
+                                    th:checked="${task != null and task.completed}"
+                                    onclick="this.nextElementSibling.classList.toggle('completed')" style="margin-right: 10px;">
+
+                                <span class="task-name"
+                                data-toggle="collapse"
+                                th:data-target="'#future-task-' + ${iter.index}"
+                                style="cursor:pointer;"
+                                th:text="${task.name}"></span>
+
+                                <span style="color:gold; margin-left:auto; cursor:pointer;"
+                                    data-toggle="collapse"
+                                    th:data-target="'#task-' + ${iter.index}"
+                                    th:text="${#temporals.format(task.dateTime, 'dd MMM HH:mm')}">
+                                </span>
+                            </div>
+
+                            <!-- Collapsible content -->
+                            <div th:id="'future-task-' + ${iter.index}"
+                                class="collapse"
+                                data-parent="#taskAccordion">
+
+                                <div style="padding:10px; color:white;">
+                                    <p><strong>Date:</strong>
+                                        <span th:text="${#temporals.format(task.dateTime, 'dd MMM HH:mm')}"></span>
+                                    </p>
+                                    <p><strong>Address:</strong>
+                                        <span th:text="${task.address}"></span>
+                                    </p>
+                                    <p><strong>Notes:</strong>
+                                        <span th:text="${task.notes}"></span>
+                                    </p>
+                                </div>
+
+                            </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Task Modal -->    
+        <div class="modal fade" id="addTaskModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+
+                    <form th:action="@{/tasklist/add}" method="post">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4>Add Task</h4>
+                        </div>
+
+                        <div class="modal-body">
+                            <input type="text" name="name" class="form-control" placeholder="Name"><br>
+
+                            <input type="datetime-local" name="dateTime" class="form-control"><br>
+
+                            <input type="text" name="address" class="form-control" placeholder="Address"><br>
+
+                            <textarea name="notes" class="form-control" placeholder="Notes"></textarea>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">Add</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        </div>
+                    </form>
+        
+                </div>
+            </div>
+        </div>
+
+        <!-- Task Details Modal -->
+        <div class="modal fade" id="taskDetailModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4>Task Details</h4>
+                    </div>
+
+                    <div class="modal-body">
+
+                        <p><strong>Name:</strong> <span id="detailName"></span></p>
+                        <p><strong>Date:</strong> <span id="detailDate"></span></p>
+                        <p><strong>Address:</strong> <span id="detailAddress"></span></p>
+                        <p><strong>Notes:</strong> <span id="detailNotes"></span></p>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+</body>
+</html>

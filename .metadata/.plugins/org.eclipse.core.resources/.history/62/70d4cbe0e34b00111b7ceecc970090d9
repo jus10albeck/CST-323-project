@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="layouts/defaultTemplate">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Events</title>
+
+    <style>
+        body {
+            background-color: #808080;
+        }
+
+        .section {
+            width: 82%;
+            margin: 15px auto;
+        }
+
+        .section-title {
+            color: gold;
+            font-size: 22px;
+        }
+
+        .event-form {
+            margin-top: 10px;
+            margin-bottom: 15px;
+        }
+
+        .event-form input,
+        .event-form select,
+        .event-form button {
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+
+        .event-box {
+            border: 1px solid black;
+            padding: 10px;
+            height: 40vh;
+            overflow-y: auto;
+            background-color: #858585;
+            margin-top: 10px;
+        }
+
+        .event-item {
+            padding: 10px;
+            border-bottom: 1px solid #444;
+            color: #87cefa;
+        }
+
+        .event-date {
+            color: gold;
+            float: right;
+        }
+
+        .event-category {
+            color: gold;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+<section layout:fragment="content">
+
+    <div th:insert="~{layouts/common :: topBar}"></div>
+
+    <div class="section">
+
+        <span class="section-title">Events</span>
+
+        <form th:action="@{/events/add}" method="post" class="event-form">
+            <input type="text" name="name" placeholder="Event Name" required>
+
+            <input type="datetime-local" name="dateTime" required>
+
+            <select name="eventCategory" required>
+                <option value="">Select Category</option>
+                <option value="APPOINTMENT">Appointments</option>
+                <option value="BIRTHDAY">Birthdays</option>
+                <option value="CONCERT">Concerts</option>
+                <option value="RESERVATION">Reservations</option>
+                <option value="SPORT">Sports</option>
+                <option value="OTHER">Other</option>
+            </select>
+
+            <input type="text" name="description" placeholder="Description">
+
+            <button type="submit">Add Event</button>
+        </form>
+
+        <div class="event-box">
+
+            <div th:each="event : ${events}" class="event-item">
+
+                <span th:text="${event.name}"></span>
+
+                <span class="event-date"
+                      th:text="${#temporals.format(event.dateTime, 'dd MMM yyyy HH:mm')}">
+                </span>
+
+                <p class="event-category">
+                    <strong>Category:</strong>
+                    <span th:text="${event.eventCategory}"></span>
+                </p>
+
+                <p th:text="${event.description}"></p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+</body>
+</html>

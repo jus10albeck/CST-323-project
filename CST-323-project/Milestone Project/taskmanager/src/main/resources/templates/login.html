@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+    xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" 
+    layout:decorate="layouts/defaultTemplate">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+	
+	<link rel="stylesheet"
+	      href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css">
+	<link rel="stylesheet"
+	      href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap-theme.min.css">
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js"></script>
+
+    <style>
+        body {
+            background-color: #808080;
+        }
+
+        .login-container {
+            width: 400px;
+            margin: 50px auto;
+            padding: 40px;            
+            background-color: #808080;
+            text-align: center;
+        }
+
+        .logo {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 30px auto;
+            border-radius: 50%;
+            border: 2px solid black;
+            display: flex;
+            background-color: slategrey;
+        }
+        .form-control {
+            width: 70%;
+            margin: 0 auto 8px auto;
+            text-align: center;
+        }
+
+        .label-text {
+            color:gold;
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: large;
+        }
+
+        .btn-submit {
+            width: 120px;
+            height: 40px;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .register-text {
+            margin-top: 30px;
+            color: gold;
+            font-weight: bold;
+            font-size: large;
+        }
+
+        .register-link {
+            color: #00ccff;
+            text-decoration: none;
+        }
+
+        .error-text {
+            color: rgb(161, 25, 25);
+            font-size: 12px;
+            margin-top: -10px;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <section layout:fragment="content">
+        <div class="login-container">
+            <div class="logo"></div>
+
+            <form th:action="@{/login/doLogin}" th:object="${loginModel}" method="post">
+                <input type="text" th:field="*{username}" class="form-control">
+                <div class="label-text">Username</div>
+
+                <div class="error-text"
+                        th:if="${#fields.hasErrors('username')}" 
+                        th:errors="*{username}">
+                    </div>
+
+                <input type="password" th:field="*{password}" class="form-control">
+                <div class="label-text">Password</div>
+
+                <div class="error-text"
+                        th:if="${#fields.hasErrors('password')}" 
+                        th:errors="*{password}">
+                    </div>
+
+                <button type="submit" class="btn btn-primary btn-submit">Login</button>
+            </form>
+
+            <div class="register-text">
+                Don't have an account? <br>
+                <a th:href="@{/register/}" class="register-link">Register</a>
+            </div>
+        </div>
+    </section>
+</body>

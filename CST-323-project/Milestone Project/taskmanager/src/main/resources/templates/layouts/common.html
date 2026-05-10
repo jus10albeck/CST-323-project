@@ -1,0 +1,281 @@
+<div th:fragment="topBar">  
+    <style>
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            font-size: 25px;
+
+        }
+
+        .company-name {
+            color: gold;
+            font-weight: bold;
+            text-align: center;
+            cursor: pointer;
+
+            text-decoration: none;
+        }
+
+        .company-name:hover {
+            color: gold;
+            text-decoration: none;
+        }
+
+        .company-name:focus,
+        .company-name:active {
+            color: gold;
+            text-decoration: none;
+            outline: none;
+        }
+
+        .side-menu {
+            position: fixed;
+            top: 0;
+            left: -45%;
+            width: 45%;
+            height: 100%;
+            background-color: #808080;
+            overflow-x: hidden;
+            transition: 0.3s;
+            padding: 15px;
+            z-index: 2000;
+            text-align: left;
+        }
+
+        .side-menu.open {
+            left: 0;
+        }
+
+        .menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: gold;
+            margin-bottom: 20px;
+        }
+
+        .close-btn {
+            cursor: pointer;
+            font-size: 22px;
+            transition: transform 0.2s ease;
+        }
+
+        .close-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .menu-content {
+            padding-left: 0;
+            margin-left: 0;
+            display: block;
+        }
+
+        .menu-content a {
+            display: block;
+            width: 100%;
+            color: gold;
+            font-size: 18px;
+            margin: 8px 0;
+            text-decoration: none;
+            transition: transform 0.2s ease;
+            padding-left: 10px;
+        }
+
+        .menu-content a:hover {
+            transform: scale(1.05);
+        }
+
+        .menu-footer {
+            position: absolute;
+            bottom: 20px;
+            transition: transform 0.2s ease;
+            
+        }
+        
+        .menu-footer a {
+            color: gold;
+            font-size: 18px;
+            text-decoration: none;
+            
+        }
+        
+        .menu-footer:hover {
+            transform: scale(1.1);
+        }
+        
+        body.menu-open::before {
+            content: "";
+            position: fixed;
+            top:0; left:0;
+            width:100%; height:100%;
+            background: rgba(0,0,0,0.4);
+            z-index: 1500;
+        }
+
+        .glyphicon {
+            transition: transform 0.2s ease;
+        }
+
+        .glyphicon:hover {
+            transform: scale(1.1);
+        }
+
+    </style>
+
+    <div class="top-bar">
+        <!-- Menu -->
+        <span class="glyphicon glyphicon-menu-hamburger"
+            style="color: gold; cursor: pointer;"
+            onclick="openMenu()">
+        </span>
+
+        <!-- Title -->
+        <a href="/tasklist" class="company-name">
+            Task Manager
+        </a>
+
+        <!-- Search -->
+         <span class="glyphicon glyphicon-search"
+            style="color: gold; cursor: pointer;"
+            data-toggle="modal"
+            data-target="#searchModal">
+         </span>
+    </div>
+
+    <div id="sideMenu" class="side-menu">
+
+        <!-- Header -->
+        <div class="menu-header">
+            <span style="font-size: 20px;">Menu</span>
+            <span class="close-btn" onclick="closeMenu()" style="font-size: 32px;">&times;</span>
+        </div>
+
+        <!-- Menu Items -->
+        <div class="menu-content">
+            <a href="/tasklist" >Task List</a>
+            <a href="/recurringTasks">Recurring Tasks</a>
+			<a href="/events">Events</a>
+        </div>
+
+        <!-- Footer -->
+        <div class="menu-footer">
+            <a href="/logout" style="color: gold;">Logout</a>
+        </div>
+    </div>
+
+            <!-- Search Modal -->
+    <div class="modal fade" id="searchModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4>Search Tasks</h4>
+                </div>
+
+                <div class="modal-body">
+
+                    <!-- Search input -->
+                    <input type="text" id="searchInput"
+                        class="form-control"
+                        placeholder="Search tasks...">
+
+                    <br>
+
+                    <!-- Results -->
+                    <div id="searchResults"></div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <script>
+        function openMenu() {
+            document.getElementById("sideMenu").classList.add("open");
+            document.body.classList.add("menu-open");
+        }
+
+        function closeMenu() {
+            document.getElementById("sideMenu").classList.remove("open");
+            document.body.classList.remove("menu-open");
+        }
+
+        function highlight(text, query) {
+            if (!query) return text;
+
+            const regex = new RegExp(`(${query})`, 'gi');
+            return text.replace(regex, '<span class="highlight">$1</span>');
+        }
+
+        $(document).ready(function () {
+
+            $('#searchInput').on('input', function () {
+
+                let query = $(this).val().toLowerCase();
+                let results = "";
+
+                $('.task-item').each(function () {
+
+                    let name = $(this).data('name') || "";
+                    let date = $(this).data('date') || "";
+                    let address = $(this).data('address') || "";
+                    let notes = $(this).data('notes') || "";
+
+                    // Convert to lowercase for matching
+                    let nameLower = name.toLowerCase();
+                    let dateLower = date.toLowerCase();
+                    let addressLower = address.toLowerCase();
+                    let notesLower = notes.toLowerCase();
+         
+                    let nameHighlighted = highlight(name, query);
+                    let dateHighlighted = highlight(date, query);
+                    let addressHighlighted = highlight(address, query);
+                    let notesHighlighted = highlight(notes, query);
+
+                    // Match search
+                    if (
+                        nameLower.includes(query) ||
+                        dateLower.includes(query) ||
+                        addressLower.includes(query) ||
+                        notesLower.includes(query)
+                    ) {       
+                        results += `
+                            <div style="
+                                padding:10px;
+                                margin-bottom:8px;
+                                background:#9a9a9a;
+                                border-radius:5px;
+                            ">
+                                <strong>${nameHighlighted}</strong><br>
+
+                                <span style="color:gold">${dateHighlighted}</span><br>
+
+                                <div style="margin-top:5px;">
+                                    <strong>Address:</strong> ${addressHighlighted}
+                                </div>
+
+                                <div>
+                                    <strong>Notes:</strong> ${notesHighlighted}
+                                </div>
+
+                            </div>
+                        `;
+                    }
+
+                });
+
+                if (results === "") {
+                    results = "<p>No matching tasks found</p>";
+                }
+
+                $('#searchResults').html(results);
+
+            });
+
+        });
+    </script>
+</div>
