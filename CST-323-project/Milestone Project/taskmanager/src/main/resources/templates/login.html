@@ -98,6 +98,11 @@
                         th:if="${#fields.hasErrors('password')}" 
                         th:errors="*{password}">
                     </div>
+					
+					<div class="error-text"
+						th:if="${loginError}"
+						th:text="${loginError}">
+					</div>
 
                 <button type="submit" class="btn btn-primary btn-submit">Login</button>
             </form>

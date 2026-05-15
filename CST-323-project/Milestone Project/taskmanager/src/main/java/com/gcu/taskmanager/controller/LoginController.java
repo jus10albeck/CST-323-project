@@ -62,16 +62,19 @@ public class LoginController
 	 * @return Redirects to task list if valid, otherwise reloads login page with error
 	 */
 	@PostMapping("/login/doLogin")
-	public String doLogin(@ModelAttribute("loginModel") User user, Model model)
+	public String doLogin(@ModelAttribute("loginModel") User user, Model model, HttpSession session)
 	{
 	    boolean validUser = userService.validateLogin(user.getUsername(), user.getPassword());
 
 	    if (validUser)
 	    {
+	    	User loggedInUser = userService.findByUsername(user.getUsername());
+	    	
+	    	session.setAttribute("user", loggedInUser);
+	    	
 	    	return "redirect:/tasklist"; // goes to task list page
 	    }
 
-	    model.addAttribute("loginModel", new User());
 	    model.addAttribute("loginError", "Invalid username or password.");
 
 	    return "login";
@@ -143,9 +146,11 @@ public class LoginController
 	 * @return The task list page template
 	 */
 	@GetMapping("/tasklist")
-	public String showTaskList(Model model)
+	public String showTaskList(Model model, HttpSession session)
 	{
-	    User user = userService.findByUsername("testuser");
+	    User user = (User) session.getAttribute("user");
+	    
+	    System.out.println("SESSION USER: " + (user != null ? user.getUsername() : "NULL"));
 
 	    model.addAttribute("todayTasks", taskService.getTodayTasks(user));
 	    model.addAttribute("futureTasks", taskService.getFutureTasks(user));
@@ -162,9 +167,9 @@ public class LoginController
 	 * @return Redirects back to the task list page
 	 */
 	@PostMapping("/tasklist/add")
-	public String addTask(@ModelAttribute Task task)
+	public String addTask(@ModelAttribute Task task, HttpSession session)
 	{
-	    User user = userService.findByUsername("testuser");
+		User user = (User) session.getAttribute("user");
 
 	    task.setUser(user);
 	    task.setCompleted(false);
@@ -194,9 +199,9 @@ public class LoginController
 	 * @return The recurring tasks page template
 	 */
 	@GetMapping("/recurringTasks")
-	public String showRecurringTasks(Model model)
+	public String showRecurringTasks(Model model, HttpSession session)
 	{
-	    User user = userService.findByUsername("testuser");
+		User user = (User) session.getAttribute("user");
 
 	    model.addAttribute("dailyTasks", recurringTaskService.getDailyRecurringTasks(user));
 	    model.addAttribute("weeklyTasks", recurringTaskService.getWeeklyRecurringTasks(user));
@@ -215,9 +220,9 @@ public class LoginController
 	 * @return Redirects back to the recurring tasks page
 	 */
 	@PostMapping("/recurringtasks/addDaily")
-	public String addDailyRecurringTask(@ModelAttribute RecurringTask recurringTask)
+	public String addDailyRecurringTask(@ModelAttribute RecurringTask recurringTask, HttpSession session)
 	{
-	    User user = userService.findByUsername("testuser");
+		User user = (User) session.getAttribute("user");
 
 	    recurringTask.setUser(user);
 	    recurringTask.setRecurrenceType("DAILY");
@@ -240,9 +245,9 @@ public class LoginController
 	 */
 	@PostMapping("/recurringtasks/addWeekly")
 	public String addWeeklyRecurringTask(@ModelAttribute RecurringTask recurringTask,
-	                                     @RequestParam(required = false) String[] days)
+	                                     @RequestParam(required = false) String[] days, HttpSession session)
 	{
-	    User user = userService.findByUsername("testuser");
+		User user = (User) session.getAttribute("user");
 
 	    recurringTask.setUser(user);
 	    recurringTask.setRecurrenceType("WEEKLY");
@@ -268,9 +273,9 @@ public class LoginController
 	 * @return Redirects back to the recurring tasks page
 	 */
 	@PostMapping("/recurringtasks/addMonthly")
-	public String addMonthlyRecurringTask(@ModelAttribute RecurringTask recurringTask)
+	public String addMonthlyRecurringTask(@ModelAttribute RecurringTask recurringTask, HttpSession session)
 	{
-	    User user = userService.findByUsername("testuser");
+		User user = (User) session.getAttribute("user");
 
 	    recurringTask.setUser(user);
 	    recurringTask.setRecurrenceType("MONTHLY");
@@ -305,9 +310,9 @@ public class LoginController
 	 * @return The events page template
 	 */
 	@GetMapping("/events")
-	public String showEvents(Model model)
+	public String showEvents(Model model, HttpSession session)
 	{
-	    User user = userService.findByUsername("testuser");
+		User user = (User) session.getAttribute("user");
 
 	    model.addAttribute("events", eventService.getAllEventsByUser(user));
 
@@ -328,9 +333,9 @@ public class LoginController
 	        @RequestParam("name") String name,
 	        @RequestParam("dateTime") LocalDateTime dateTime,
 	        @RequestParam("eventCategory") String eventCategory,
-	        @RequestParam("description") String description)
+	        @RequestParam("description") String description, HttpSession session)
 	{
-	    User user = userService.findByUsername("testuser");
+		User user = (User) session.getAttribute("user");
 
 	    Event event = new Event();
 

@@ -153,7 +153,7 @@
 
                     <span class="task-detail"
                         style="margin-left:auto;"
-                        th:text="${task.address}">
+                        th:text="${task.time}">
                     </span>
 
                 </div>
@@ -163,8 +163,13 @@
                     style="padding-left:30px; color:white;">
 
                     <p><strong>Time:</strong>
-                        <span th:text="${task.address}"></span>
+                        <span th:text="${task.time}"></span>
                     </p>
+					
+					<p><strong>Address:</strong>
+					    <span th:text="${task.address}"></span>
+					</p>
+
 
                     <p><strong>Notes:</strong>
                         <span th:text="${task.notes}"></span>
@@ -221,9 +226,7 @@
 				style="color: gold; font-size: 16px"></span>        
 		</div>
 
-        <div class="task-box" >
-
-
+        <div class="task-box">
             <div th:each="task, iter : ${weeklyTasks}">
 
                 <div class="task-item" style="display:flex; align-items:center;">
@@ -246,7 +249,7 @@
 
                     <span class="task-detail"
                         style="margin-left:auto;"
-                        th:text="${task.address}">
+                        th:text="${task.dayOfWeek}">
                     </span>
 
                 </div>
@@ -256,8 +259,12 @@
                     style="padding-left:30px; color:white;">
 
                     <p><strong>Time:</strong>
-                        <span th:text="${task.address}"></span>
+                        <span th:text="${task.time}"></span>
                     </p>
+					
+					<p><strong>Address:</strong>
+					    <span th:text="${task.address}"></span>
+					</p>
 
                     <p><strong>Notes:</strong>
                         <span th:text="${task.notes}"></span>
@@ -326,7 +333,6 @@
 
         <div class="task-box" >
 
-
             <div th:each="task, iter : ${monthlyTasks}">
 
                 <div class="task-item" style="display:flex; align-items:center;">
@@ -349,7 +355,7 @@
 
                     <span class="task-detail"
                         style="margin-left:auto;"
-                        th:text="${task.address}">
+                        th:text="${task.dayOfMonth}">
                     </span>
 
                 </div>
@@ -358,9 +364,14 @@
                     class="collapse"
                     style="padding-left:30px; color:white;">
 
-                    <p><strong>Date:</strong>
-                        <span th:text="${task.address}"></span>
-                    </p>
+					<p><strong>Time:</strong>
+					    <span th:text="${task.time}"></span>
+					</p>
+
+					<p><strong>Address:</strong>
+					    <span th:text="${task.address}"></span>
+					</p>
+
 
                     <p><strong>Notes:</strong>
                         <span th:text="${task.notes}"></span>
