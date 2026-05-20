@@ -54,6 +54,22 @@ public class LoginController
 	private EventService eventService;
 	
 	/**
+	 * Displays the login page when a user navigates to the login URL.
+	 * 
+	 * Initializes a new User object for Thymeleaf form binding so the
+	 * login form can capture username and password input.
+	 *
+	 * @param model The Spring MVC model used to pass data to the view
+	 * @return The login page template
+	 */
+	@GetMapping("/login/")
+	public String showLoginPage(Model model)
+	{
+	    model.addAttribute("loginModel", new User());
+	    return "login";
+	}
+	
+	/**
 	 * Handles login form submission.
 	 * This method checks the entered username and password against the database.
 	 *
