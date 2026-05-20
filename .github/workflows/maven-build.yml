@@ -20,4 +20,5 @@ jobs:
           distribution: 'temurin'
 
       - name: Build with Maven
+        working-directory: CST-323-project/Milestone Project/taskmanager
         run: mvn clean package -DskipTests
